@@ -30,7 +30,7 @@
   
   1. The Transactional messaging service for OTP and Success are being sent through Twilio
       App ID and Secret must be provided.
-  2. The Mailer service is provided by Nodemon and hence email id and password must be provided.
+  2. The Mailer service is provided by Nodemailer and hence email id and password must be provided.
   3. Authentication of user is done using JWT.
 
 ## Authors
