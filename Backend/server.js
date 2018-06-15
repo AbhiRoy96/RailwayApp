@@ -4,8 +4,8 @@ var bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
 const app = express()
-const accountSid = 'ACaea60a47ce171242cbba882f8868c802';
-const authToken = '2e750b59ee2bf7e6ae401d29e157780b';
+const accountSid = 'twilio-accountSid';
+const authToken = 'twilio-authToken';
 
 
 var twilio = require('twilio');
@@ -36,7 +36,7 @@ var db = mongoose.connection;
 
 app.use(bodyParser.json({
     extended: true      // to support JSON-encoded bodies
-}));      
+}));
 
 
 
@@ -84,7 +84,7 @@ app.post('/login', function(req, res){
                 });
             } else {
                 if(cred.identifier==user.email&&cred.password==user.password){
-                
+
                     if(user.sessionStatus==="Not Verified"){
                         res.json({
                             userid: cred.identifier,
@@ -110,8 +110,8 @@ app.post('/login', function(req, res){
                                 "route": routes,
                                 "status": "200"
                             };
-                            updateTokenLogin(user.email, token, res, messagePayload);    
-                        });     
+                            updateTokenLogin(user.email, token, res, messagePayload);
+                        });
                     }
 
                 }else{
@@ -122,7 +122,7 @@ app.post('/login', function(req, res){
             }
 
         }
-        
+
     });
 
 
@@ -148,8 +148,8 @@ app.post('/login/signOn', verifyToken, function(req, res){
 app.post('/signUpUser', function(req, res){
     userData = req.body;
     Users.createUser(userData, function(err, user){
-        if (err) { 
-            console.log('Error occured: --------> '+ err); 
+        if (err) {
+            console.log('Error occured: --------> '+ err);
         } else {
             res.send(user);
         }
@@ -165,7 +165,7 @@ app.post('/verifyUserChallenge', function(req, res){
             console.log('Error occured: --------> '+ err);
         } else {
             if(user.sessionStatus === 'Not Verified') {
-                
+
                 const otpDetails = {
                     "email": user.email,
                     "session_id": uuidv4(),
@@ -216,7 +216,7 @@ app.post('/api/stations/betw', function(req, res){
 app.post('/api/booking/provisional', function(req, res){
     bookingData = req.body;
     provId = genProvId();
-    
+
     adultNo = 0;
     children = 0;
     tatkalChrge = 0;
@@ -239,7 +239,7 @@ app.post('/api/booking/provisional', function(req, res){
     } else if(bookingData.mealType === 'NO-FOOD') {
         cuisineChrge = 0;
     } else {
-       cuisineChrge = 0; 
+       cuisineChrge = 0;
     }
 
 
@@ -276,7 +276,7 @@ app.post('/api/booking/provisional', function(req, res){
         cateringCharge: cuisineChrge.toString(),
         reservationCharge: "40",
         tatkalCharge: tatkalChrge.toString(),
-        gst: "not calculated", 
+        gst: "not calculated",
         totalFare: "not calculated",
         TransactionId: 'payment not done',
         debitCardId: 'payment not done',
@@ -358,7 +358,7 @@ app.post('/api/payment/verify', function(req, res){
                     sendTransactionalMsg(messagingData.session_id, '+91', messagingData.mobile, smsBody, res);
                 }
             });
-            
+
         }
 
     });
@@ -369,7 +369,7 @@ app.post('/api/payment/verify', function(req, res){
 
 app.post('/api/payment/verifiedUser', function(req, res){
     const bodyParams = req.body;
-    
+
     const bookingUpdates = {
         provisionalNumber: bodyParams.provisionalNumber,
         pnrNumber: genProvId(),
@@ -398,7 +398,7 @@ app.post('/api/payment/verifiedUser', function(req, res){
                                 console.log('Error occured: --------> '+ err);
                             } else {
                                 //sendEmailConfirmation(bodyParams.identifier, bookingUpdates.pnrNumber);
-                                
+
                                 const mes_notify = {
                                     userid: bodyParams.identifier,
                                     dateOfCreation: Date.now(),
@@ -425,7 +425,7 @@ app.post('/api/booking/history', function(req, res) {
     const user_s = req.body;
     const userid = user_s.identifier;
 
-    var fullyBooked = []; 
+    var fullyBooked = [];
     Booking.myBookings(userid, function(err, bookings){
         if(err){
             console.log('Error occured: --------> '+ err);
@@ -434,7 +434,7 @@ app.post('/api/booking/history', function(req, res) {
             bookings.forEach((booking) => {
 
                 let bookingDetls = {
-                    userid: userid,        
+                    userid: userid,
                     basic: {
                         pnrNumber: booking.pnrNumber,
                         trainNo: booking.trainNo,
@@ -482,7 +482,7 @@ app.post('/api/booking/history', function(req, res) {
             var trains_searched = [];
             fullyBooked.forEach((booking_temp) => {
                 let trains_temp = {
-                    "trainNo": parseInt(booking_temp.basic.trainNo) 
+                    "trainNo": parseInt(booking_temp.basic.trainNo)
                 };
 
                 trains_searched.push(trains_temp);
@@ -506,9 +506,9 @@ app.post('/api/booking/history', function(req, res) {
 
                     res.json(fullyBooked);
                 }
-            });   
+            });
         }
-        
+
     });
 
 });
@@ -518,7 +518,7 @@ app.post('/api/booking/pnr/search', function(req, res){
     const userid = req.body.identifier;
     const pnr = req.body.pnrNumber;
 
-    var fullyBooked = []; 
+    var fullyBooked = [];
     Booking.pnrSearch(userid, pnr, function(err, bookings){
         if(err){
             console.log('Error occured: --------> '+ err);
@@ -527,7 +527,7 @@ app.post('/api/booking/pnr/search', function(req, res){
             bookings.forEach((booking) => {
 
                 let bookingDetls = {
-                    userid: userid,        
+                    userid: userid,
                     basic: {
                         pnrNumber: booking.pnrNumber,
                         trainNo: booking.trainNo,
@@ -575,7 +575,7 @@ app.post('/api/booking/pnr/search', function(req, res){
             var trains_searched = [];
             fullyBooked.forEach((booking_temp) => {
                 let trains_temp = {
-                    "trainNo": parseInt(booking_temp.basic.trainNo) 
+                    "trainNo": parseInt(booking_temp.basic.trainNo)
                 };
 
                 trains_searched.push(trains_temp);
@@ -599,9 +599,9 @@ app.post('/api/booking/pnr/search', function(req, res){
 
                     res.json(fullyBooked);
                 }
-            });   
+            });
         }
-        
+
     });
 });
 
@@ -614,7 +614,7 @@ app.post('/password/verifyUser', function(req, res) {
 
     Users.basicDetls(userid, function(err, user) {
         if(err) {
-           console.log('Error occured: --------> '+ err); 
+           console.log('Error occured: --------> '+ err);
        } else {
             mobile = user.phone;
             session_id = uuidv4();
@@ -668,7 +668,7 @@ app.post('/password/verify/shortener', function(req, res){
                 }
                 res.send(payload);
             }
-            
+
         }
     });
 });
@@ -676,7 +676,7 @@ app.post('/password/verify/shortener', function(req, res){
 
 app.post('/password/changePassword', function(req, res){
     passwDetl = req.body;
-    
+
     Password_Change.verifyPasswordChangeRequest(passwDetl.identifier, passwDetl.shortLink, function(err, pass) {
         if(err) {
             console.log('Error occured: --------> '+ err);
@@ -694,7 +694,7 @@ app.post('/password/changePassword', function(req, res){
                         }
                         res.send(payload);
                     } else {
-                        
+
                         Password_Change.updatePasswordStatus(passwDetl.identifier, passwDetl.shortLink, function(err2, pass) {
                             if(err2){
                                 console.log('Error occured: --------> '+ err2);
@@ -718,7 +718,7 @@ app.post('/password/changePassword', function(req, res){
                                     }
                                 });
                             }
-                        });    
+                        });
                     }
                 });
             } else {
@@ -727,7 +727,7 @@ app.post('/password/changePassword', function(req, res){
                 }
                 res.send(payload);
             }
-            
+
         }
     });
 
@@ -914,7 +914,7 @@ function sendOTP(session_id, countryCode, rec_number, otp_m, res){
         console.log("Message Sent --> "+ message.sid);
     });
 
-    
+
     res.json({
         session_id: session_id,
         phone: hashed_N,
@@ -942,7 +942,7 @@ function sendTransactionalMsg(session_id, countryCode, rec_number, smsBody, res)
         console.log("Message Sent --> "+ message.sid);
     });
 
-    
+
     res.json({
         session_id: session_id,
         phone: hashed_N,
@@ -981,7 +981,7 @@ function updateTokenLogin(email, token, res, carrier){
     Users.updateToken(email, "Signed In", token, function(err, user){
         if(err)
             console.log('Error occured: --------> '+ err);
-        else{            
+        else{
             res.json(carrier);
         }
 
@@ -1051,7 +1051,7 @@ function calculateFare(bookingData, res){
 
 function createBookings(bData, res){
     Booking.createBooking(bData);
-    
+
     const responseId = {
         'provisionalNumber': bData.provisionalNumber,
     }
@@ -1061,7 +1061,7 @@ function createBookings(bData, res){
 
 function sendSmsConfirmation(identifier, smsBody, res){
     Users.basicDetls(identifier, function(err, user){
-        
+
         receiver_N = '+91'+user.phone;
         otp_message = smsBody;
         console.log("Sending OTP to "+receiver_N);
